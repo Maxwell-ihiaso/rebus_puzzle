@@ -8,7 +8,8 @@ import os
 import emoji
 
 def get_font(size: int):
-    for name in ["NotoSans.ttf","DejaVuSans.ttf", "Arial.ttf", "LiberationSans-Regular.ttf"]:
+    # for name in ["NotoSans.ttf","NotoSansSymbols2-Regular.ttf","NotoEmoji.ttf","DejaVuSans.ttf", "Arial.ttf", "LiberationSans-Regular.ttf"]:
+    for name in ["NotoEmoji.ttf"]:
         try:
             return ImageFont.truetype(os.path.join("fonts", name), size=size)
         except Exception:
@@ -32,7 +33,11 @@ def draw_puzzle(layout: List[Dict], w: int = 1100, h: int = 650, bg="#0b1220", f
         dashed = item.get("dashed", False)
         opacity = item.get("opacity", 255)
 
+        emojis_rendered = emoji.emojize(text)
+        print(emojis_rendered)
+
         font = get_font(size)
+        txtFont = ImageFont.truetype(os.path.join("fonts", "DejaVuSans.ttf"), size=size)
         bbox = font.getbbox(text)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
@@ -47,8 +52,7 @@ def draw_puzzle(layout: List[Dict], w: int = 1100, h: int = 650, bg="#0b1220", f
             ty = y - th//2
 
         print(tw, th, tx, ty, x, y, align)
-        emojis_rendered = emoji.demojize(text)
-        print(emojis_rendered)
+
 
         if box:
             pad = box.get("pad", 16)
@@ -82,7 +86,10 @@ def draw_puzzle(layout: List[Dict], w: int = 1100, h: int = 650, bg="#0b1220", f
 
         txt_img = Image.new("RGBA", (tw+4, th+80), (0,0,0,0))
         txt_draw = ImageDraw.Draw(txt_img)
-        txt_draw.text((2,2), text, font=font, fill=(231,237,247, opacity))
+
+        
+        txt_draw.text((2,2), emojis_rendered, font=font, fill=(231,237,247))
+                
         if underline:
             txt_draw.line((0, th+1, tw, th+1), fill=(231,237,247, opacity), width=max(2, size//16))
         if rotate != 0:
